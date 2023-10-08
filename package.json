@@ -1,0 +1,28 @@
+{
+  "name": "nodejssept",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "csv": "^6.3.4",
+    "csv-parser": "^3.0.0",
+    "docxtemplater": "^3.40.0",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "mammoth": "^1.6.0",
+    "nodemon": "^3.0.1",
+    "open": "^9.1.0",
+    "opn": "^6.0.0",
+    "pizzip": "^3.1.4"
+  }, 
+  "engines": {
+    "node": ">=14.20.1"
+  }
+}

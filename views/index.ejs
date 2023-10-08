@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h1>Simple Form</h1>
+        <form action="/createDocx" method="post">
+            <div class="form-group">
+                <label for="name" class="form-label">Name:</label>
+                <select id="name" name="name" class="form-input">
+                    <% data.forEach(function(item) { %>
+                        <option value="<%= item.name %>"><%= item.name %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="labnumber" class="form-label">Lab Number:</label>
+                <input type="text" id="labnumber" name="labnumber" class="form-input" placeholder="Enter Lab Number">
+            </div>
+            
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+
+</html>
