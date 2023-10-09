@@ -56,52 +56,10 @@
                 <label for="labnumber" class="form-label">Lab Number:</label>
                 <input type="text" id="labnumber" name="labnumber" class="form-input" placeholder="Enter Lab Number">
             </div>
-                <button type="button" id="submitBtn">Submit</button>
-                <div id="loadingMessage" style="display: none;">Generating document, please wait...</div>
-                
+            <button type="submit" id="submitBtn">Submit</button>
+            <div id="loadingMessage" style="display: none;">Generating document, please wait...</div>
         </form>
     </div>
-    <script>
-        $(document).ready(function() {
-            // Handle form submission
-            $("#submitBtn").click(function() {
-                // Show loading message
-                $("#loadingMessage").show();
-                
-                // Disable the submit button
-                $(this).prop("disabled", true);
-
-                // Perform the AJAX request
-                $.ajax({
-                    type: "POST",
-                    url: "/createDocx",
-                    data: $("#myForm").serialize(), // Serialize the form data
-                    success: function(response) {
-                        // Hide loading message
-                        $("#loadingMessage").hide();
-
-                        // Show success message
-                        $("#successMessage").show();
-
-                        // Hide the success message after 10 seconds
-                        setTimeout(function() {
-                            $("#successMessage").hide();
-                        }, 10000);
-
-                        // You can also optionally do something with the response from the server if needed
-                    },
-                    error: function() {
-                        // Handle error if the AJAX request fails
-                        alert("Error occurred.");
-                    },
-                    complete: function() {
-                        // Re-enable the submit button after AJAX request is complete
-                        $("#submitBtn").prop("disabled", false);
-                    }
-                });
-            });
-        });
-    </script>
 </body>
 
 </html>

@@ -2,25 +2,10 @@ const express = require("express");
 const app = express();
 const PizZip = require("pizzip");
 const Docxtemplater = require("docxtemplater");
-const csv = require("csv-parser")
-const open = require('opn')
-const dialog = require('node-file-dialog')
-
-
+const csv = require("csv-parser");
 const fs = require("fs");
 const path = require("path");
-
-let isNew = true;
-
-app.set("view engine", "ejs");
-
-// Set the views directory
-app.set('views', 'views');
-
-// Parse incoming form data
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-// app.use(bodyParser.urlencoded({ extended: false }));
+const cookieParser = require("cookie-parser"); // Added for cookie handling
 
 // Define a global variable to store CSV data
 let csvData = [];
@@ -35,32 +20,43 @@ fs.createReadStream(path.resolve(__dirname, "nameList.csv"))
   })
   .on("end", () => {
     console.log("CSV data loaded successfully");
-    // console.log(csvData)
   });
 
+app.set("view engine", "ejs");
+app.set("views", "views");
 
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser()); // Use cookie parser middleware
 
 app.get("/", (req, res) => {
   res.render("index", { data: csvData });
 });
-app.get("/success", (req, res) => {
-  res.render("success");
+
+app.get("/success/:docxFileName", (req, res) => {
+  const docxFileName = req.params.docxFileName;
+  res.render("success", { docxFileName });
 });
 
-app.get("/createDocx", (req, res) => {
+app.get("/download/:docxFileName", (req, res) => {
+  const docxFileName = req.params.docxFileName;
+  const docxFilePath = path.resolve(__dirname, "temp", docxFileName);
+
+  // Send the generated DOCX file as a response
+  res.setHeader("Content-Disposition", `attachment; filename="${docxFileName}"`);
+  res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+  const fileStream = fs.createReadStream(docxFilePath);
+  fileStream.pipe(res);
+
+  // Set a cookie to indicate that the download is complete
+  res.cookie("downloadComplete", "true");
+
+  // After the download is complete, the user will be redirected to the index page
 });
 
 app.post("/createDocx", async (req, res) => {
-
-
-
-  // Get the blog post data from the form
   const { name, labnumber } = req.body;
-  console.log(req.body)
 
-
-  // Load the docx file as binary content
   const content = fs.readFileSync(
     path.resolve(__dirname, "template.docx"),
     "binary"
@@ -73,93 +69,63 @@ app.post("/createDocx", async (req, res) => {
     linebreaks: true,
   });
 
-  // Function to get the roll number based on the selected name
   function getRollNumber(selectedName) {
     const selectedData = csvData.find((item) => item.name === selectedName);
-    return selectedData ? selectedData.rollNumber : '';
+    return selectedData ? selectedData.rollNumber : "";
   }
 
-  // Function to determine the section based on the roll number
   function getSection(rollNumber) {
-    // Extract the last two digits from the roll number
     const lastTwoDigits = parseInt(rollNumber.slice(-2), 10);
 
     if (lastTwoDigits >= 1 && lastTwoDigits <= 33) {
-      return 'Section A';
+      return "Section A";
     } else if (lastTwoDigits >= 34 && lastTwoDigits <= 66) {
-      return 'Section B';
+      return "Section B";
     } else if (lastTwoDigits === 67) {
-      return 'Section A';
+      return "Section A";
     } else {
-      return ''; // Handle other cases if needed
+      return "";
     }
   }
 
-  // Function to extract the first name from the full name
   function getFirstName(fullName) {
-    const parts = fullName.split(' ');
+    const parts = fullName.split(" ");
     if (parts.length > 0) {
       return parts[0];
     } else {
-      return fullName; // If no space is found, return the full name
+      return fullName;
     }
   }
 
+  const rollno = getRollNumber(name);
+  const section = getSection(rollno);
 
-  const rollno = getRollNumber(name)
-  const section = getSection(rollno)
-
-
-  // Render the document (Replace {first_name} by John, {last_name} by Doe, ...)
   doc.render({
     name: name,
     labnumber: labnumber,
     rollno: rollno,
     section: section,
-
   });
 
   const buf = doc.getZip().generate({
     type: "nodebuffer",
-    // compression: DEFLATE adds a compression step.
-    // For a 50MB output document, expect 500ms additional CPU time
     compression: "DEFLATE",
   });
 
-  const timestamp = Date.now(); // Get the current timestamp
-  const config = { type: 'directory' }
+  const timestamp = Date.now();
+  const docxFileName = `${getFirstName(
+    req.body.name
+  ).toLowerCase()}_lab_${labnumber}_${timestamp}.docx`;
 
-  let dir; // Declare dir as a global variable
+  // Save the generated DOCX file to a temporary folder
+  const tempFolderPath = path.resolve(__dirname, "temp");
+  const docxFilePath = path.resolve(tempFolderPath, docxFileName);
+  fs.mkdirSync(tempFolderPath, { recursive: true });
+  fs.writeFileSync(docxFilePath, buf);
 
-  dialog(config)
-    .then(result => {
-      dir = result[0]; // Assign the result to the global dir variable
-      console.log(dir);
-
-      const docxFileName = `${getFirstName(req.body.name).toLowerCase()}_lab_${labnumber}_${timestamp}.docx`;
-      const docxFilePath = path.resolve(dir, docxFileName);
-
-      // Write the buffer to a DOCX file and save it in the directory
-      fs.writeFileSync(docxFilePath, buf);
-
-      // Open the saved DOCX file using the default application
-      open(docxFilePath);
-
-
-      
-        // Redirect to the "success" page
-        // res.redirect("/success");
-        // isNew = false
-        res.redirect("/")
-      // res.redirect("/")
-    })
-    .catch(err => console.log(err));
-
-
-
+  // Redirect to the "success" page with the DOCX file name
+  res.redirect(`/success/${docxFileName}`);
 });
-
-
 
 app.listen(3000, () => {
   console.log("Node.js project started at port 3000");
