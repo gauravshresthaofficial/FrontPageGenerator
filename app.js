@@ -4,12 +4,18 @@ const PizZip = require("pizzip");
 const Docxtemplater = require("docxtemplater");
 const csv = require("csv-parser")
 const open = require('opn')
+const dialog = require('node-file-dialog')
 
 
 const fs = require("fs");
 const path = require("path");
 
+let isNew = true;
+
 app.set("view engine", "ejs");
+
+// Set the views directory
+app.set('views', 'views');
 
 // Parse incoming form data
 app.use(express.json());
@@ -32,8 +38,7 @@ fs.createReadStream(path.resolve(__dirname, "nameList.csv"))
     // console.log(csvData)
   });
 
-// Set the views directory
-app.set('views', 'views');
+
 
 
 app.get("/", (req, res) => {
@@ -44,13 +49,16 @@ app.get("/success", (req, res) => {
 });
 
 app.get("/createDocx", (req, res) => {
-  res.render("createDocx");
 });
 
 app.post("/createDocx", async (req, res) => {
+
+
+
   // Get the blog post data from the form
   const { name, labnumber } = req.body;
-  // console.log(req.body)
+  console.log(req.body)
+
 
   // Load the docx file as binary content
   const content = fs.readFileSync(
@@ -98,14 +106,14 @@ app.post("/createDocx", async (req, res) => {
   }
 
 
-  const rollno = getRollNumber(req.body.name)
+  const rollno = getRollNumber(name)
   const section = getSection(rollno)
 
 
   // Render the document (Replace {first_name} by John, {last_name} by Doe, ...)
   doc.render({
-    name: req.body.name,
-    labnumber: req.body.labnumber,
+    name: name,
+    labnumber: labnumber,
     rollno: rollno,
     section: section,
 
@@ -119,19 +127,36 @@ app.post("/createDocx", async (req, res) => {
   });
 
   const timestamp = Date.now(); // Get the current timestamp
-  // buf is a nodejs Buffer, you can either write it to a
-  // file or res.send it with express for example.
-  fs.writeFileSync(path.resolve(__dirname, `${getFirstName(req.body.name).toLowerCase()}_lab_${labnumber}_${timestamp}.docx`), buf);
+  const config = { type: 'directory' }
+
+  let dir; // Declare dir as a global variable
+
+  dialog(config)
+    .then(result => {
+      dir = result[0]; // Assign the result to the global dir variable
+      console.log(dir);
+
+      const docxFileName = `${getFirstName(req.body.name).toLowerCase()}_lab_${labnumber}_${timestamp}.docx`;
+      const docxFilePath = path.resolve(dir, docxFileName);
+
+      // Write the buffer to a DOCX file and save it in the directory
+      fs.writeFileSync(docxFilePath, buf);
+
+      // Open the saved DOCX file using the default application
+      open(docxFilePath);
 
 
-  const docxFilePath = path.resolve(__dirname, `${getFirstName(req.body.name).toLowerCase()}_lab_${labnumber}_${timestamp}.docx`);
+      
+        // Redirect to the "success" page
+        // res.redirect("/success");
+        // isNew = false
+        res.redirect("/")
+      // res.redirect("/")
+    })
+    .catch(err => console.log(err));
 
-  // Open the saved DOCX file using the default application
-  open(docxFilePath);
 
-  // Redirect to the "success" page
-  // res.redirect("/success");
-  res.redirect("/");
+
 });
 
 

@@ -34,17 +34,21 @@
             border-radius: 3px;
         }
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
     <div class="form-container">
+        <div id="successMessage" style="display: none;">Successfully created!</div>
         <h1>Simple Form</h1>
-        <form action="/createDocx" method="post">
+        <form id="myForm" method="post" action="/createDocx">
             <div class="form-group">
                 <label for="name" class="form-label">Name:</label>
                 <select id="name" name="name" class="form-input">
                     <% data.forEach(function(item) { %>
-                        <option value="<%= item.name %>"><%= item.name %></option>
+                        <option value="<%= item.name %>">
+                            <%= item.name %>
+                        </option>
                     <% }); %>
                 </select>
             </div>
@@ -52,10 +56,52 @@
                 <label for="labnumber" class="form-label">Lab Number:</label>
                 <input type="text" id="labnumber" name="labnumber" class="form-input" placeholder="Enter Lab Number">
             </div>
-            
-            <button type="submit">Submit</button>
+                <button type="button" id="submitBtn">Submit</button>
+                <div id="loadingMessage" style="display: none;">Generating document, please wait...</div>
+                
         </form>
     </div>
+    <script>
+        $(document).ready(function() {
+            // Handle form submission
+            $("#submitBtn").click(function() {
+                // Show loading message
+                $("#loadingMessage").show();
+                
+                // Disable the submit button
+                $(this).prop("disabled", true);
+
+                // Perform the AJAX request
+                $.ajax({
+                    type: "POST",
+                    url: "/createDocx",
+                    data: $("#myForm").serialize(), // Serialize the form data
+                    success: function(response) {
+                        // Hide loading message
+                        $("#loadingMessage").hide();
+
+                        // Show success message
+                        $("#successMessage").show();
+
+                        // Hide the success message after 10 seconds
+                        setTimeout(function() {
+                            $("#successMessage").hide();
+                        }, 10000);
+
+                        // You can also optionally do something with the response from the server if needed
+                    },
+                    error: function() {
+                        // Handle error if the AJAX request fails
+                        alert("Error occurred.");
+                    },
+                    complete: function() {
+                        // Re-enable the submit button after AJAX request is complete
+                        $("#submitBtn").prop("disabled", false);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
