@@ -1,75 +1,260 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Front Page Generator</title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        input:checked+label {
+            border-color: aqua;
+            background-color: #edf0fb;
+            box-shadow: rgba(51, 22, 238, 0.2) 0px 2px 8px 0px;
+            color: #1342ec;
+            font-weight: 500;
+            transition: all .3s ease-in-out;
+            background-color: white;
         }
 
-        .form-container {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+        input:checked+label:hover {
+            background-color: white;
+            transform: scale(1);
+            font-weight: 500;
+            color: #1342ec;
+            /* You can specify any style you want for the hover effect here */
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
+        input:hover+label {
+            background-color: #d0d9fa;
+            box-shadow: rgba(51, 22, 238, 0.1) 0px 8px 24px;
+            transition: all .3s ease-in-out;
             font-weight: bold;
-            margin-bottom: 5px;
+            color: #7b7b7b;
         }
 
-        .form-input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
+        .label {
+            font-weight: 500;
+
         }
     </style>
 </head>
 
-<body>
-    <div class="form-container">
-        <h1>Generate Front Page</h1>
-        <form id="myForm" method="post" action="/createDocx">
-            <div class="form-group">
-                <label for="name" class="form-label">Name:</label>
-                <select id="name" name="name" class="form-input">
-                    <% data.forEach(function(item) { %>
-                        <option value="<%= item.name %>" <% if (selectedName === item.name) { %>selected<% } %>>
-                            <%= item.name %>
-                        </option>
-                    <% }); %>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="labnumber" class="form-label">Lab Number:</label>
-                <input type="text" id="labnumber" name="labnumber" class="form-input" placeholder="Enter Lab Number" value="<%= labNumber %>">
-            </div>
-            <button type="submit" id="submitBtn">Submit</button>
-        </form>
-        
-    </div>
+<body class="flex justify-center items-center h-screen bg-slate-100">
+    <form id="myForm" method="post" action="/createDocx"
+        class="flex flex-col divide-y gap-2 w-1/3 border rounded-lg text-center drop-shadow-md bg-white border-gray-300 text-gray-700">
+        <h1 class="flex items-center justify-center h-12 pt-2 font-bold text-xl">Front Page Generator</h1>
+        <div class="flex items-center divide-x w-full h-12 pt-2 px-2">
 
-    <script>
-        // Retrieve the "name" cookie value
-        const nameFromCookie = getCookie("name");
+            <div class="flex-1">
+                <input class="hidden" id="5th" value="5th" type="radio" name="semester" checked>
+                <label class="flex Flex-col h-12 w-full cursor-pointer justify-center
+                        items-center" for="5th">
+                    <span class=" text-md uppercase">5th sem</span>
+                </label>
+            </div>
 
-        // Function to retrieve a cookie value by name
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
-    </script>
+            <div class="flex-1">
+                <input class="hidden" id="6th" value="6th" type="radio" name="semester">
+                <label class="flex Flex-col h-12 w-full  cursor-pointer justify-center
+                        items-center" for="6th">
+                    <span class=" text-md uppercase">6th sem</span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group flex h-12 items-center w-full pt-2 px-2">
+            <Label for="name" class="w-1/5 label">Name:</Label>
+            <select id="name" name="name" class="shadow-sm  form-input flex-grow px-4 h-10 border rounded-lg text-black font-normal font-lg">
+                <% data.forEach(function(item) { %>
+                    <option value="<%= item.name %>" <% if (selectedName === item.name) { %>selected<% } %>>
+                        <%= item.name %>
+                    </option>
+                <% }); %>
+            </select>
+        </div>
+        <div class="flex h-12 items-center w-full pt-2 px-2">
+            <label class="w-1/5 label" for="subject">Subject:</label>
+            <div class="flex flex-grow justify-center divide-x " id="fifthsemsub">
+                <div class="flex-1 flex-grow h-12 items-center justify-center">
+                    <input class="hidden" value="aiw" id="aiw" type="radio" name="subject" checked>
+                    <label class="flex Flex-col h-12 w-full  cursor-pointer justify-center
+                        items-center" for="aiw">
+                        <span class=" text-md uppercase">aiw</span>
+                    </label>
+                </div>
+                <div class="flex-1 flex-grow h-12 items-center justify-center">
+                    <input class="hidden" value="java" id="java" type="radio" name="subject">
+                    <label class="flex Flex-col h-12 w-full  cursor-pointer justify-center
+                        items-center" for="java">
+                        <span class=" text-md uppercase">java</span>
+                    </label>
+                </div>
+                <div class="flex-1 flex-grow h-12 items-center justify-center">
+                    <input class="hidden" value="cg" id="cg" type="radio" name="subject">
+                    <label class="flex Flex-col h-12 w-full  cursor-pointer justify-center
+                        items-center" for="cg">
+                        <span class=" text-md uppercase">cg</span>
+                    </label>
+                </div>
+
+            </div>
+            <div class="flex flex-grow justify-center divide-x" id="sixthsemsub">
+                <div class="flex-1 flex-grow h-12 items-center justify-center">
+                    <input class="hidden" value="cyber" id="cyber" type="radio" name="subject">
+                    <label class="flex Flex-col h-12 w-full  cursor-pointer justify-center
+                        items-center" for="cyber">
+                        <span class=" text-md uppercase">cyber security</span>
+                    </label>
+                </div>
+                <div class="flex-1 flex-grow h-12 items-center justify-center">
+                    <input class="hidden" value="se" id="se" type="radio" name="subject">
+                        <label class="flex Flex-col h-12 w-full  cursor-pointer justify-center
+                        items-center" for="se">
+                        <span class=" text-md uppercase">se</span>
+                    </label>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form-group flex h-12 items-center w-full pt-2 px-2">`
+            <label class="w-1/5 label" for="labnumber">Lab no:</label>
+            <input class="shadow-sm form-input flex-grow border h-10 rounded-sm hover:border-gray-500 hover:border px-2" type="text"
+                name="labnumber" id="labnumber" value="<%= labNumber %>">
+        </div>
+
+        <div class="flex justify-end items-center pr-2">
+            <button class="group relative overflow-hidden text-center font-normal bg-[#2856fb] text-white rounded-lg py-2 px-4 my-2 shadow-lg hover:scale-95"
+                type="submit" id="submitBtn">Generate Front Page
+                <div
+                    class="absolute inset-0 h-full w-full scale-0 rounded-lg transition-all duration-300 group-hover:scale-100 group-hover:bg-black/20">
+                </div>
+
+            </button>
+        </div>
+
+
+    </form>
 </body>
+<script>
+    let sixth = document.getElementById('6th');
+    let fifth = document.getElementById('5th');
+
+    let fifthsemsub = document.getElementById('fifthsemsub');
+    let sixthsemsub = document.getElementById('sixthsemsub');
+
+    // Function to handle radio button change
+    // Function to handle radio button change with anime.js easing
+    // Function to handle radio button change with anime.js easing
+    function handleRadioChange() {
+        if (sixth.checked) {
+            document.getElementById("cyber").checked = true ;
+            anime({
+                targets: fifthsemsub,
+                opacity: 0, // Start with opacity 0
+                duration: 400, // Animation duration in milliseconds
+                easing: 'linear', // Use a linear easing function for fade-out
+                complete: function () {
+                    fifthsemsub.classList.add('hidden');
+                    fifthsemsub.style.opacity = 0; // Ensure opacity is set to 0
+                    sixthsemsub.style.opacity = 0; // Start sixthsemsub with opacity 0
+                    sixthsemsub.classList.remove('hidden');
+                    anime({
+                        targets: sixthsemsub,
+                        opacity: 1, // End with opacity 1
+                        duration: 400, // Animation duration in milliseconds
+                        easing: 'easeInOutQuad', // Use the desired easing function for fade-in
+                    });
+                },
+            });
+        } else if (fifth.checked) {
+            document.getElementById("aiw").checked = true ;
+            anime({
+                targets: sixthsemsub,
+                opacity: 0, // Start with opacity 0
+                duration: 400, // Animation duration in milliseconds
+                easing: 'linear', // Use a linear easing function for fade-out
+                complete: function () {
+                    sixthsemsub.classList.add('hidden');
+                    sixthsemsub.style.opacity = 0; // Ensure opacity is set to 0
+                    fifthsemsub.style.opacity = 0; // Start fifthsemsub with opacity 0
+                    fifthsemsub.classList.remove('hidden');
+                    anime({
+                        targets: fifthsemsub,
+                        opacity: 1, // End with opacity 1
+                        duration: 400, // Animation duration in milliseconds
+                        easing: 'easeInOutQuad', // Use the desired easing function for fade-in
+                    });
+                },
+            });
+        }
+    }
+
+    if (sixth.checked) {
+        anime({
+            targets: fifthsemsub,
+            opacity: 0, // Start with opacity 0
+            duration: 50, // Animation duration in milliseconds
+            easing: 'easeInOutQuad', // Use an easing function (example: easeInOutQuad)
+            complete: function () {
+                fifthsemsub.classList.add('hidden');
+                anime({
+                    targets: sixthsemsub,
+                    opacity: 1, // End with opacity 1
+                    duration: 50, // Animation duration in milliseconds
+                    easing: 'easeInOutQuad', // Use the same easing function
+                });
+            },
+        });
+    } else if (fifth.checked) {
+        anime({
+            targets: sixthsemsub,
+            opacity: 0, // Start with opacity 0
+            duration: 50, // Animation duration in milliseconds
+            easing: 'easeInOutQuad', // Use an easing function (example: easeInOutQuad)
+            complete: function () {
+                sixthsemsub.classList.add('hidden');
+                anime({
+                    targets: fifthsemsub,
+                    opacity: 1, // End with opacity 1
+                    duration: 50, // Animation duration in milliseconds
+                    easing: 'easeInOutQuad', // Use the same easing function
+                });
+            },
+        });
+    }
+
+
+
+    // Add event listeners to radio buttons
+    sixth.addEventListener('change', handleRadioChange);
+    fifth.addEventListener('change', handleRadioChange);
+
+    // Initial call to set the initial state based on the checked radio button
+    handleRadioChange();
+
+    // Retrieve the "name" cookie value
+    const nameFromCookie = getCookie("name");
+
+// Function to retrieve a cookie value by name
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+</script>
+
+
+
+
+
+
+
+
+
 
 </html>

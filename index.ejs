@@ -1,2 +1,75 @@
-File "aayushma_lab_14_1696787887297.docx" is saved.
-File "aayushma_lab_15_1696787929716.docx" is saved.
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Front Page Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h1>Generate Front Page</h1>
+        <form id="myForm" method="post" action="/createDocx">
+            <div class="form-group">
+                <label for="name" class="form-label">Name:</label>
+                <select id="name" name="name" class="form-input">
+                    <% data.forEach(function(item) { %>
+                        <option value="<%= item.name %>" <% if (selectedName === item.name) { %>selected<% } %>>
+                            <%= item.name %>
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="labnumber" class="form-label">Lab Number:</label>
+                <input type="text" id="labnumber" name="labnumber" class="form-input" placeholder="Enter Lab Number" value="<%= labNumber %>">
+            </div>
+            <button type="submit" id="submitBtn">Submit</button>
+        </form>
+        
+    </div>
+
+    <script>
+        // Retrieve the "name" cookie value
+        const nameFromCookie = getCookie("name");
+
+        // Function to retrieve a cookie value by name
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+    </script>
+</body>
+
+</html>

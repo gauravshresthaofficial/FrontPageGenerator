@@ -10,14 +10,39 @@ const cookieParser = require("cookie-parser"); // Added for cookie handling
 // Define a global variable to store CSV data
 let csvData = [];
 
+const subjects = {
+  aiw: {
+    fullName: "Advance Internetworking",
+    teacher: "Mr. SANJAY KUMAR YADAV",
+  },
+  java: {
+    fullName: "Java Programming-II",
+    teacher: "Mr. RAMESH SHAHI",
+  },
+  cg: {
+    fullName: "Computer Graphics",
+    teacher: "Mr. GANESH YOGI",
+  },
+  // Add more subjects here
+  cyber: {
+    fullName: "Cyber Security",
+    teacher: "Mr. GANESH YOGI",
+  },
+  se: {
+    fullName: "Software Engineering",
+    teacher: "Mr. GANESH YOGI",
+  },
+};
+
 // Function to load CSV data
 function loadCsvData() {
   fs.createReadStream(path.resolve(__dirname, "nameList.csv"))
-    .pipe(csv({ headers: ["RollNumber", "Name"] })) // Specify column headers
+    .pipe(csv({ headers: ["RollNumber", "Name", "Gender"] })) // Specify column headers
     .on("data", (row) => {
       const rollNumber = row["RollNumber"];
       const name = row["Name"];
-      csvData.push({ rollNumber, name });
+      const gender = row["Gender"];
+      csvData.push({ rollNumber, name, gender });
     })
     .on("end", () => {
       console.log("CSV data loaded successfully");
@@ -79,14 +104,19 @@ app.get("/download/:docxFileName", (req, res) => {
 // Create DOCX File
 app.post("/createDocx", async (req, res) => {
   const { name, labnumber } = req.body;
+  console.log(req.body);
+  const selectedSemester = req.body.semester; // Access the selected semester
+  const selectedSubject = req.body.subject; // Access the selected subject
 
   // Set cookies to store the selected values
   res.cookie("selectedName", name);
   res.cookie("labNumber", labnumber);
 
-
   // Load the DOCX template content
-  const content = fs.readFileSync(path.resolve(__dirname, "template.docx"), "binary");
+  const content = fs.readFileSync(
+    path.resolve(__dirname, "template2.docx"),
+    "binary"
+  );
   const zip = new PizZip(content);
 
   // Initialize the Docxtemplater
@@ -96,6 +126,20 @@ app.post("/createDocx", async (req, res) => {
   });
 
   // Helper functions
+  function findGenderByName(nameToFind) {
+    const result = csvData.find((record) => record.name === nameToFind);
+    if (result) {
+      if (result.gender === "M") // This will return 'M' or 'F' based on the name found.
+      {
+        return "Mr. ";
+      }
+      else {
+        return "Ms. ";
+      }
+    } else {
+      return "Name not found"; // Return a message if the name is not in the CSV data.
+    }
+  }
 
   function getRollNumber(selectedName) {
     const selectedData = csvData.find((item) => item.name === selectedName);
@@ -129,12 +173,17 @@ app.post("/createDocx", async (req, res) => {
 
   const rollno = getRollNumber(name);
   const section = getSection(rollno);
+  const gender = findGenderByName(name);
+  full_name = gender + name;
 
   doc.render({
-    name: name,
+    name: full_name,
     labnumber: labnumber,
     rollno: rollno,
     section: section,
+    subject: subjects[selectedSubject].fullName,
+    teacherName: subjects[selectedSubject].teacher,
+    semester: selectedSemester + " Semester",
   });
 
   // Generate the DOCX buffer
@@ -146,7 +195,9 @@ app.post("/createDocx", async (req, res) => {
 
   // Generate a unique timestamp for the file name
   const timestamp = Date.now();
-  const docxFileName = `${getFirstName(name).toLowerCase()}_lab_${labnumber}_${timestamp}.docx`;
+  const docxFileName = `${getFirstName(
+    name
+  ).toLowerCase()}_${selectedSubject}__lab_${labnumber}_${timestamp}.docx`;
 
   // Save the generated DOCX file to a temporary folder
   const tempFolderPath = path.resolve(__dirname, "temp");
