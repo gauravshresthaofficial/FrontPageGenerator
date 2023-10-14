@@ -45,7 +45,7 @@
 </head>
 
 <body class="flex justify-center items-center h-screen bg-slate-100">
-    <form id="myForm" method="post" action="/createDocx"
+    <form id="myForm" method="post" action="/createDocx" onsubmit="return validateForm()"
         class="flex flex-col divide-y gap-2 w-1/3 border rounded-lg text-center drop-shadow-md bg-white border-gray-300 text-gray-700">
         <h1 class="flex items-center justify-center h-12 pt-2 font-bold text-xl">Front Page Generator</h1>
         <div class="flex items-center divide-x w-full h-12 pt-2 px-2">
@@ -68,7 +68,7 @@
         </div>
         <div class="form-group flex h-12 items-center w-full pt-2 px-2">
             <Label for="name" class="w-1/5 label">Name:</Label>
-            <select id="name" name="name" class="shadow-sm  form-input flex-grow px-4 h-10 border rounded-lg text-black font-normal font-lg">
+            <select id="name" name="name" class="shadow-sm outline-0 form-input flex-grow px-4 h-10 border rounded-lg text-black font-normal font-lg">
                 <% data.forEach(function(item) { %>
                     <option value="<%= item.name %>" <% if (selectedName === item.name) { %>selected<% } %>>
                         <%= item.name %>
@@ -123,12 +123,12 @@
 
         <div class="form-group flex h-12 items-center w-full pt-2 px-2">`
             <label class="w-1/5 label" for="labnumber">Lab no:</label>
-            <input class="shadow-sm form-input flex-grow border h-10 rounded-sm hover:border-gray-500 hover:border px-2" type="text"
+            <input class="shadow-sm form-input flex-grow border h-10 rounded-sm hover:border-gray-500 hover:border px-2 outline-0" type="text"
                 name="labnumber" id="labnumber" value="<%= labNumber %>">
         </div>
 
         <div class="flex justify-end items-center pr-2">
-            <button class="group relative overflow-hidden text-center font-normal bg-[#2856fb] text-white rounded-lg py-2 px-4 my-2 shadow-lg hover:scale-95"
+            <button data-modal-toggle="popup-modal" class="group relative overflow-hidden text-center font-normal bg-[#2856fb] text-white rounded-lg py-2 px-4 my-2 shadow-lg hover:scale-95"
                 type="submit" id="submitBtn">Generate Front Page
                 <div
                     class="absolute inset-0 h-full w-full scale-0 rounded-lg transition-all duration-300 group-hover:scale-100 group-hover:bg-black/20">
@@ -139,6 +139,17 @@
 
 
     </form>
+    <!-- Pop-up card element -->
+<div id="popup-modal" tabindex="-1" class="fixed top-0 left-0 w-screen h-screen backdrop-blur-sm flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white p-4 rounded-md h-1/3 w-1/5 relative text-center">
+        <h2 class="font-bold text-2xl pb- pt-3 ">Error</h2>
+        <p class="mt-2 text-gray-400 font-medium" id="popupMessage"></p>
+        <div class="w-full border-t absolute bottom-0 left-0 text-right py-2 flex justify-center">
+            <button class="font-medium text-[#ff3366] hover:scale-95 px-2" onclick="closePopup()">Close</button>
+        </div>
+    </div>
+</div>
+    
 </body>
 <script>
     let sixth = document.getElementById('6th');
@@ -148,8 +159,7 @@
     let sixthsemsub = document.getElementById('sixthsemsub');
 
     // Function to handle radio button change
-    // Function to handle radio button change with anime.js easing
-    // Function to handle radio button change with anime.js easing
+    
     function handleRadioChange() {
         if (sixth.checked) {
             document.getElementById("cyber").checked = true ;
@@ -246,6 +256,40 @@ function getCookie(name) {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
+
+
+// Function to validate the form
+function validateForm() {
+            const nameInput = document.getElementById('name');
+            const labNumberInput = document.getElementById('labnumber');
+            const selectedSemester = document.querySelector('input[name="semester"]:checked');
+            const selectedSubject = document.querySelector('input[name="subject"]:checked');
+
+            if (!nameInput.value || !labNumberInput.value || !selectedSemester || !selectedSubject) {
+                showValidationPopup('Please fill in all fields and select a semester and subject.');
+                return false;
+            }
+
+            if (!/^[0-9]+$/.test(labNumberInput.value)) {
+    // Show the validation pop-up
+    showValidationPopup('Lab number must be a valid number.');
+    return false; // Prevent form submission
+}
+
+            return true;
+        }
+
+        function showValidationPopup(message) {
+            const popup = document.getElementById('popup-modal');
+            const popupMessage = document.querySelector('#popup-modal p');
+            popupMessage.textContent = message;
+            popup.classList.remove('hidden');
+        }
+
+        function closePopup() {
+            const popup = document.getElementById('popup-modal');
+            popup.classList.add('hidden');
+        }
 </script>
 
 
