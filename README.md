@@ -1,4 +1,4 @@
-![image](https://github.com/gauravshresthaofficial/FrontPageGenerator/assets/87366731/92d2b632-2dfd-4668-8d81-b6e0c2629ca7)# Front Page Generator for College Lab Reports
+# Front Page Generator for College Lab Reports
 
 This project is a Front Page Generator developed specifically for creating front pages for college lab reports. It is intended to be user-friendly and cater to the needs of classmates who require a standardized format for their lab report covers.
 
@@ -19,5 +19,4 @@ This project is a Front Page Generator developed specifically for creating front
 - **nodemon**: Utility that monitors for any changes in your source and automatically restarts your server.
 
   ## Screenshot
-![Front Page Generator Screenshot](![image](https://github.com/gauravshresthaofficial/FrontPageGenerator/assets/87366731/07da0400-07aa-4bce-a47d-a3a992cf5f41)
-)
+![image](https://github.com/gauravshresthaofficial/FrontPageGenerator/assets/87366731/92d2b632-2dfd-4668-8d81-b6e0c2629ca7)
